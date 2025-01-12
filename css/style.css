@@ -15,8 +15,18 @@ header {
 }
 
 #messages {
-    margin: 1em 0;
+    width: 100%;
+    background-color: #f8f9fa; /* Light pastel color */
+    padding: 1em;
     text-align: center;
+    font-family: 'Arial', sans-serif;
+    font-size: 1.2em;
+    color: #333; /* Darker text for contrast */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
 }
 
 #game-area {

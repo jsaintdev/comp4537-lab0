@@ -10,6 +10,10 @@ class Game {
         this.userInput = 0;
         this.deck = null;
 
+        // Bind methods to ensure proper scope
+        this.handleStartButton = this.handleStartButton.bind(this);
+        this.resetGame = this.resetGame.bind(this);
+
         // Event listener for start/reset button
         this.startButton.addEventListener("click", () => this.handleStartButton());
 
@@ -21,6 +25,7 @@ class Game {
     initializeUI() {
         this.messageElement.textContent = messages.startMessage;
         this.startButton.textContent = messages.startButton;
+        this.inputElement.placeholder = messages.inputPlaceholder;
     }
 
     // Handle the start/reset button click
@@ -33,15 +38,22 @@ class Game {
         }
 
         this.userInput = inputValue;
+
+        // Hides the input bar
+        this.inputElement.style.display = "none";
+
+        // Start the game
         this.startGame();
     }
+
 
     // Start the game
     startGame() {
         this.showMessage(messages.memorizeMessage);
         this.startButton.textContent = messages.resetButton;
-        this.startButton.removeEventListener("click", () => this.handleStartButton());
-        this.startButton.addEventListener("click", () => this.resetGame());
+
+        // Clears previous event listeners
+        this.resetListeners();
 
         // Create the deck
         this.deck = new Deck(this.userInput);
@@ -59,11 +71,19 @@ class Game {
     resetGame() {
         this.gameArea.innerHTML = "";
         this.inputElement.value = "";
+
+        // Reset to the initial screen
+        this.inputElement.style.display = "block";
         this.startButton.textContent = messages.startButton;
-        this.startButton.removeEventListener("click", () => this.resetGame());
-        this.startButton.addEventListener("click", () => this.handleStartButton());
+        
+        this.resetListeners();
         this.showMessage(messages.startMessage);
         this.deck = null;
+    }
+
+    resetListeners() {
+        this.startButton.removeEventListener("click", () => this.resetGame());
+        this.startButton.addEventListener("click", () => this.handleStartButton());
     }
 
     // Display a message to the user
