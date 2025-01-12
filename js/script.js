@@ -1,3 +1,5 @@
+// Reference: chatGPT was used while making this program
+
 class Game {
     constructor() {
         // UI elements
@@ -71,7 +73,7 @@ class Game {
         this.deck.setCardsClickable(false);
 
         // Start the memorization phase
-        setTimeout(() => {
+        this.memorizationTimeout = setTimeout(() => {
             // Update the message to indicate shuffling phase
             this.showMessage(messages.shuffleMessage);
 
@@ -108,8 +110,45 @@ class Game {
                 this.deck.setCardsClickable(true);
 
                 this.showMessage(messages.recallMessage);
+
+                this.clickPhase();
             }
         }, 2000);
+    }
+
+    clickPhase() {
+        let currentIndex = 0; // Index to track the user's progress
+    
+        // Enable card clicks
+        this.deck.setCardsClickable(true);
+    
+        // Add click event listener to each card
+        this.deck.cards.forEach((card) => {
+            card.element.addEventListener("click", () => {
+                if (currentIndex >= this.userInput) return; // Ignore clicks after game ends
+    
+                // Check if the clicked card is correct
+                if (card.order === currentIndex) {
+                    card.revealNumber("black"); // Correct guess in black
+                    currentIndex++;
+    
+                    // Check if all cards are correctly clicked
+                    if (currentIndex === this.userInput) {
+                        this.showMessage(messages.successMessage);
+                        this.startButton.textContent = messages.againButton;
+                    }
+                } else {
+                    // Incorrect guess
+                    card.revealNumber("red");
+                    this.deck.revealAllNumbers("red");
+                    this.showMessage(messages.failureMessage);
+                    this.startButton.textContent = messages.againButton;
+    
+                    // Disable further clicks
+                    this.deck.setCardsClickable(false);
+                }
+            });
+        });
     }
 
     // Reset the game
@@ -117,6 +156,11 @@ class Game {
         // Clear the game area and reset properties
         this.gameArea.innerHTML = "";
         this.deck = null;
+
+        if (this.memorizationTimeout) {
+            clearTimeout(this.memorizationTimeout);
+            this.memorizationTimeout = null;
+        }
 
         // Call initializeUI to reset all UI elements to their initial state
         this.initializeUI();
@@ -222,6 +266,7 @@ class Deck {
         this.renderDeck(gameArea);
     }
 
+    // Make cards clickable again after shuffling
     setCardsClickable(clickable) {
         this.cards.forEach((card) => {
             if (clickable) {
@@ -231,12 +276,17 @@ class Deck {
             }
         });
     }
+
+    // Reveal the card order in red on an incorrect click
+    revealAllNumbers(color = "red") {
+        this.cards.forEach((card) => card.revealNumber(color));
+    }
 }
 
 class Card {
     constructor(color, order) {
-        this.color = color; // Background color of the card
-        this.order = order; // Initial order of the card
+        this.color = color;
+        this.order = order;
         this.element = null;
     }
 
@@ -252,6 +302,7 @@ class Card {
         return this.element;
     }
 
+    // Hides the numbers once the deck starts shuffling
     hideNumber() {
         if (this.element) {
             this.element.textContent = "";
@@ -264,6 +315,14 @@ class Card {
             this.element.style.position = "absolute";
             this.element.style.left = `${x}px`;
             this.element.style.top = `${y}px`;
+        }
+    }
+
+    // Shows the card number on a correct click
+    revealNumber(color = "black") {
+        if (this.element) {
+            this.element.textContent = this.order + 1; // Show the original number
+            this.element.style.color = color; // Set the color
         }
     }
 }
