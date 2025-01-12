@@ -68,16 +68,15 @@ class Game {
         this.deck.createDeck();
         this.deck.renderDeck(this.gameArea);
 
-
         // Disable card clicks
         this.deck.setCardsClickable(false);
 
-        // Start the memorization phase
+        // Delay the game for a set period for "memorization" then start shuffling
         this.memorizationTimeout = setTimeout(() => {
             // Update the message to indicate shuffling phase
             this.showMessage(messages.shuffleMessage);
 
-            // Shuffle the deck `userInput` number of times with a delay of 2 seconds
+            // Shuffle the deck `userInput` number of times
             this.shuffles(this.userInput);
         }, this.userInput * 1000); // Delay based on user input
     }
@@ -109,13 +108,14 @@ class Game {
                 // Re-enable card clicks after shuffling
                 this.deck.setCardsClickable(true);
 
+                // Start the user interactive phase
                 this.showMessage(messages.recallMessage);
-
                 this.clickPhase();
             }
         }, 2000);
     }
 
+    // User interactive phase where the user clicks the cards in the original order
     clickPhase() {
         let currentIndex = 0; // Index to track the user's progress
     
@@ -157,6 +157,7 @@ class Game {
         this.gameArea.innerHTML = "";
         this.deck = null;
 
+        // Reset the Memorization timer
         if (this.memorizationTimeout) {
             clearTimeout(this.memorizationTimeout);
             this.memorizationTimeout = null;
@@ -198,6 +199,7 @@ class Deck {
         const availableColors = [...this.colors];
         const shuffledColors = [];
 
+        // Assign unique values into the shuffledColors array
         while (shuffledColors.length < this.size) {
             const randomIndex = Math.floor(Math.random() * availableColors.length);
             const color = availableColors.splice(randomIndex, 1)[0]; // Remove and get the color
@@ -239,11 +241,12 @@ class Deck {
         const gameArea = document.getElementById("game-area");
         const areaWidth = gameArea.clientWidth;
         const areaHeight = gameArea.clientHeight;
-        const cardWidth = 160; // 10em = 160px
-        const cardHeight = 80; // 5em = 80px
+        const cardWidth = 160;
+        const cardHeight = 80;
 
         const usedPositions = [];
 
+        // Generate random positions for the cards and prevent overlap
         this.cards.forEach((card) => {
             let x, y, overlap;
 
