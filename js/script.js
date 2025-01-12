@@ -9,6 +9,7 @@ class Game {
         // Properties
         this.userInput = 0;
         this.deck = null;
+        this.shuffleTimer = null;
 
         // Bind methods to ensure proper scope
         this.handleStartButton = this.handleStartButton.bind(this);
@@ -54,7 +55,6 @@ class Game {
 
     }
 
-
     // Start the game
     startGame() {
         // Update the user-facing message and button
@@ -66,11 +66,50 @@ class Game {
         this.deck.createDeck();
         this.deck.renderDeck(this.gameArea);
 
+
+        // Disable card clicks
+        this.deck.setCardsClickable(false);
+
         // Start the memorization phase
         setTimeout(() => {
-            this.deck.shuffleDeck();
-            this.showMessage(messages.recallMessage);
+            // Update the message to indicate shuffling phase
+            this.showMessage(messages.shuffleMessage);
+
+            // Shuffle the deck `userInput` number of times with a delay of 2 seconds
+            this.shuffleDeck(this.userInput);
         }, this.userInput * 1000); // Delay based on user input
+    }
+
+
+    // Perform multiple shuffles with a delay
+    shuffleDeck(times) {
+        let shuffleCount = 0;
+
+        // Clear any existing timer before starting a new one
+        if (this.shuffleTimer) {
+            clearInterval(this.shuffleTimer);
+            this.shuffleTimer = null;
+        }
+
+        // Perform the first shuffle immediately
+        this.deck.shuffleDeck();
+        shuffleCount++;
+
+        // Start a new interval
+        this.shuffleTimer = setInterval(() => {
+            this.deck.shuffleDeck();
+            shuffleCount++;
+
+            if (shuffleCount >= times) {
+                clearInterval(this.shuffleTimer);
+                this.shuffleTimer = null;
+
+                // Re-enable card clicks after shuffling
+                this.deck.setCardsClickable(true);
+
+                this.showMessage(messages.recallMessage);
+            }
+        }, 2000);
     }
 
     // Reset the game
@@ -139,15 +178,48 @@ class Deck {
 
     // Shuffle the deck
     shuffleDeck() {
-        for (let i = this.cards.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
-        }
-        // Update card positions after shuffling
-        this.cards.forEach((card, index) => {
-            card.updateOrder(index);
+        // Hide card numbers
+        this.cards.forEach((card) => card.hideNumber());
+
+        // Shuffle and randomize positions
+        const gameArea = document.getElementById("game-area");
+        const areaWidth = gameArea.clientWidth;
+        const areaHeight = gameArea.clientHeight;
+        const cardWidth = 160; // 10em = 160px
+        const cardHeight = 80; // 5em = 80px
+
+        const usedPositions = [];
+
+        this.cards.forEach((card) => {
+            let x, y, overlap;
+
+            do {
+                // Generate random x and y within bounds
+                x = Math.random() * (areaWidth - cardWidth);
+                y = Math.random() * (areaHeight - cardHeight);
+
+                // Check for overlap
+                overlap = usedPositions.some(([ux, uy]) =>
+                    Math.abs(x - ux) < cardWidth / 2 && Math.abs(y - uy) < cardHeight / 2
+                );
+            } while (overlap);
+
+            usedPositions.push([x, y]);
+            card.setPosition(x, y);
         });
-        this.renderDeck(document.getElementById("game-area"));
+
+        // Render shuffled deck
+        this.renderDeck(gameArea);
+    }
+
+    setCardsClickable(clickable) {
+        this.cards.forEach((card) => {
+            if (clickable) {
+                card.element.style.pointerEvents = "auto";
+            } else {
+                card.element.style.pointerEvents = "none";
+            }
+        });
     }
 }
 
@@ -155,21 +227,34 @@ class Card {
     constructor(color, order) {
         this.color = color; // Background color of the card
         this.order = order; // Initial order of the card
+        this.element = null;
     }
 
     // Render the card as a DOM element
     render() {
-        const cardElement = document.createElement("div");
-        cardElement.classList.add("card", this.color.toLowerCase());
-        cardElement.dataset.order = this.order;
-        cardElement.style.backgroundColor = this.color;
-        cardElement.textContent = this.order + 1; // Display the card number
-        return cardElement;
+        if (!this.element) {
+            this.element = document.createElement("div");
+            this.element.classList.add("card", this.color.toLowerCase());
+        }
+        this.element.dataset.order = this.order;
+        this.element.style.backgroundColor = this.color;
+        this.element.textContent = this.order + 1; // Display card number initially
+        return this.element;
+    }
+
+    hideNumber() {
+        if (this.element) {
+            this.element.textContent = "";
+        }
     }
 
     // Update the card's order property after shuffling
-    updateOrder(newOrder) {
-        this.order = newOrder;
+    setPosition(x, y) {
+        if (this.element) {
+            this.element.style.position = "absolute";
+            this.element.style.left = `${x}px`;
+            this.element.style.top = `${y}px`;
+        }
     }
 }
 

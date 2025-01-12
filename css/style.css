@@ -30,12 +30,15 @@ header {
 }
 
 #game-area {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 1em;
     width: 80%;
+    height: 60vh;
     margin: 1em auto;
+    overflow: hidden;
 }
 
 footer {
