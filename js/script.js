@@ -76,13 +76,13 @@ class Game {
             this.showMessage(messages.shuffleMessage);
 
             // Shuffle the deck `userInput` number of times with a delay of 2 seconds
-            this.shuffleDeck(this.userInput);
+            this.shuffles(this.userInput);
         }, this.userInput * 1000); // Delay based on user input
     }
 
 
     // Perform multiple shuffles with a delay
-    shuffleDeck(times) {
+    shuffles(times) {
         let shuffleCount = 0;
 
         // Clear any existing timer before starting a new one
@@ -172,7 +172,17 @@ class Deck {
     renderDeck(gameArea) {
         gameArea.innerHTML = ""; // Clear the game area
         this.cards.forEach((card) => {
-            gameArea.appendChild(card.render());
+            // Reuse the existing element if it already exists
+            if (!card.element) {
+                card.element = card.render();
+            }
+    
+            // Ensure numbers remain hidden
+            if (card.element.textContent === "") {
+                card.hideNumber(); // Ensure no number is displayed
+            }
+    
+            gameArea.appendChild(card.element);
         });
     }
 
