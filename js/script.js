@@ -30,30 +30,36 @@ class Game {
 
     // Handle the start/reset button click
     handleStartButton() {
+        // Process user input
         const inputValue = parseInt(this.inputElement.value, 10);
 
+        // Validate user input
         if (isNaN(inputValue) || inputValue < 3 || inputValue > 7) {
             this.showMessage(messages.invalidInput);
             return;
         }
 
+        // Assign user input
         this.userInput = inputValue;
 
         // Hides the input bar
         this.inputElement.style.display = "none";
 
+        // Change button to reset behavior
+        this.startButton.removeEventListener("click", this.handleStartButton);
+        this.startButton.addEventListener("click", this.resetGame);
+
         // Start the game
         this.startGame();
+
     }
 
 
     // Start the game
     startGame() {
+        // Update the user-facing message and button
         this.showMessage(messages.memorizeMessage);
         this.startButton.textContent = messages.resetButton;
-
-        // Clears previous event listeners
-        this.resetListeners();
 
         // Create the deck
         this.deck = new Deck(this.userInput);
@@ -69,21 +75,17 @@ class Game {
 
     // Reset the game
     resetGame() {
+        // Clear the game area and reset properties
         this.gameArea.innerHTML = "";
-        this.inputElement.value = "";
-
-        // Reset to the initial screen
-        this.inputElement.style.display = "block";
-        this.startButton.textContent = messages.startButton;
-        
-        this.resetListeners();
-        this.showMessage(messages.startMessage);
         this.deck = null;
-    }
 
-    resetListeners() {
-        this.startButton.removeEventListener("click", () => this.resetGame());
-        this.startButton.addEventListener("click", () => this.handleStartButton());
+        // Call initializeUI to reset all UI elements to their initial state
+        this.initializeUI();
+        this.inputElement.style.display = "";
+
+        // Reset event listeners
+        this.startButton.removeEventListener("click", this.resetGame);
+        this.startButton.addEventListener("click", this.handleStartButton);
     }
 
     // Display a message to the user
@@ -109,8 +111,19 @@ class Deck {
 
     // Create the deck of cards
     createDeck() {
+        // Create a copy of colors and shuffle it manually
+        const availableColors = [...this.colors];
+        const shuffledColors = [];
+
+        while (shuffledColors.length < this.size) {
+            const randomIndex = Math.floor(Math.random() * availableColors.length);
+            const color = availableColors.splice(randomIndex, 1)[0]; // Remove and get the color
+            shuffledColors.push(color);
+        }
+
+        // Assign shuffled colors to cards
         for (let i = 0; i < this.size; i++) {
-            const color = this.colors[i % this.colors.length]; // Cycle through colors
+            const color = shuffledColors[i];
             const card = new Card(color, i);
             this.cards.push(card);
         }
