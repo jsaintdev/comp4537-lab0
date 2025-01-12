@@ -69,6 +69,13 @@ footer {
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Card Number Styles */
+.card-number {
+    font-size: 2em;
+    color: black;
+    pointer-events: none; /* Prevent the number from interfering with clicks */
+}
+
 /* Random Card Colors */
 .honeydew {
     background-color: HoneyDew;
