@@ -298,17 +298,23 @@ class Card {
         if (!this.element) {
             this.element = document.createElement("div");
             this.element.classList.add("card", this.color.toLowerCase());
+
+                        // Create a span for the number
+                        const numberSpan = document.createElement("span");
+                        numberSpan.classList.add("card-number");
+                        numberSpan.textContent = this.order + 1; // Display card number
+                        this.element.appendChild(numberSpan);
         }
         this.element.dataset.order = this.order;
         this.element.style.backgroundColor = this.color;
-        this.element.textContent = this.order + 1; // Display card number initially
         return this.element;
     }
 
     // Hides the numbers once the deck starts shuffling
     hideNumber() {
         if (this.element) {
-            this.element.textContent = "";
+            const numberSpan = this.element.querySelector(".card-number");
+            if (numberSpan) numberSpan.textContent = "";
         }
     }
 
@@ -324,8 +330,11 @@ class Card {
     // Shows the card number on a correct click
     revealNumber(color = "black") {
         if (this.element) {
-            this.element.textContent = this.order + 1; // Show the original number
-            this.element.style.color = color; // Set the color
+            const numberSpan = this.element.querySelector(".card-number");
+            if (numberSpan) {
+                numberSpan.textContent = this.order + 1; // Show the original number
+                numberSpan.style.color = color; // Set the color
+            }
         }
     }
 }
