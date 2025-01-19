@@ -118,20 +118,20 @@ class Game {
     // User interactive phase where the user clicks the cards in the original order
     clickPhase() {
         let currentIndex = 0; // Index to track the user's progress
-    
+
         // Enable card clicks
         this.deck.setCardsClickable(true);
-    
+
         // Add click event listener to each card
         this.deck.cards.forEach((card) => {
             card.element.addEventListener("click", () => {
                 if (currentIndex >= this.userInput) return; // Ignore clicks after game ends
-    
+
                 // Check if the clicked card is correct
                 if (card.order === currentIndex) {
                     card.revealNumber("black"); // Correct guess in black
                     currentIndex++;
-    
+
                     // Check if all cards are correctly clicked
                     if (currentIndex === this.userInput) {
                         this.showMessage(messages.successMessage);
@@ -143,7 +143,7 @@ class Game {
                     this.deck.revealAllNumbers("red");
                     this.showMessage(messages.failureMessage);
                     this.startButton.textContent = messages.againButton;
-    
+
                     // Disable further clicks
                     this.deck.setCardsClickable(false);
                 }
@@ -222,12 +222,12 @@ class Deck {
             if (!card.element) {
                 card.element = card.render();
             }
-    
+
             // Ensure numbers remain hidden
             if (card.element.textContent === "") {
                 card.hideNumber(); // Ensure no number is displayed
             }
-    
+
             gameArea.appendChild(card.element);
         });
     }
@@ -299,11 +299,11 @@ class Card {
             this.element = document.createElement("div");
             this.element.classList.add("card", this.color.toLowerCase());
 
-                        // Create a span for the number
-                        const numberSpan = document.createElement("span");
-                        numberSpan.classList.add("card-number");
-                        numberSpan.textContent = this.order + 1; // Display card number
-                        this.element.appendChild(numberSpan);
+            // Create a span for the number
+            const numberSpan = document.createElement("span");
+            numberSpan.classList.add("card-number");
+            numberSpan.textContent = this.order + 1; // Display card number
+            this.element.appendChild(numberSpan);
         }
         this.element.dataset.order = this.order;
         this.element.style.backgroundColor = this.color;
