@@ -63,7 +63,7 @@ class ReaderScreen extends Screen {
     initialize() {
         this.setTitle();
         this.setMainContent(`
-            <div id="updatedMsg" class="top-right">${messages.reader.updatedMsg}</div>
+            <div id="updatedMsg" class="top-right">${messages.reader.updatedMsg || ''}</div>
             <div id="notesContainer" class="notes-list"></div>
         `);
         this.setFooter(`
@@ -81,7 +81,10 @@ class ReaderScreen extends Screen {
         if (notes.length === 0) {
             notesContainer.innerHTML = '<p>No notes available.</p>';
         } else {
-            notesContainer.innerHTML = notes.map(note => `<p>${note}</p>`).join('');
+            notesContainer.innerHTML = notes.map((noteContent, index) => {
+                const note = new Note(noteContent);
+                return note.toHTML(index, messages.reader.backButton);
+            }).join('');
         }
 
         const updatedMsg = document.getElementById('updatedMsg');
@@ -89,11 +92,17 @@ class ReaderScreen extends Screen {
     }
 
     setupEventListeners() {
-        document.getElementById('backButton').addEventListener('click', () => {
-            window.location.href = 'index.html';
-        });
+        const backButton = document.getElementById('backButton');
+        if (backButton) {
+            backButton.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+        } else {
+            console.error('Back button not found in the DOM.');
+        }
     }
 }
+
 
 // WriterScreen class derived from Screen
 class WriterScreen extends Screen {
@@ -107,10 +116,6 @@ class WriterScreen extends Screen {
             <div id="messageDisplay" class="top-right">${messages.writer.storedMsg || ''}</div>
             <div id="notesContainer" class="notes-list"></div>
             <button id="addButton">${messages.writer.addButton}</button>
-            <div id="noteInputContainer" style="display: none;">
-                <textarea id="noteInput" placeholder="Type your note here..."></textarea>
-                <button id="saveButton">Save Note</button>
-            </div>
         `);
         this.setFooter(`
             <button id="backButton">${messages.writer.backButton}</button>
@@ -127,49 +132,76 @@ class WriterScreen extends Screen {
         if (notes.length === 0) {
             notesContainer.innerHTML = '<p>No notes available.</p>';
         } else {
-            notesContainer.innerHTML = notes.map((note, index) => `
-                <div class="note-item" style="display: flex; justify-content: space-between; align-items: center;">
-                    <p style="margin: 0;">${note}</p>
-                    <button class="removeButton" data-index="${index}">${messages.writer.removeButton}</button>
-                </div>
-            `).join('');
+            notesContainer.innerHTML = notes.map((noteContent, index) => {
+                const note = new Note(noteContent);
+                return note.toHTML(index, messages.writer.removeButton);
+            }).join('');
         }
     }
 
     setupEventListeners() {
-        document.getElementById('addButton').addEventListener('click', () => {
-            document.getElementById('noteInputContainer').style.display = 'block';
-        });
+        // Handle Add Button
+        const addButton = document.getElementById('addButton');
+        if (addButton) {
+            addButton.addEventListener('click', () => {
+                this.createNoteInput();
+            });
+        } else {
+            console.error('Add button not found in the DOM.');
+        }
+    
+        // Handle Remove Buttons in Notes Container
+        const notesContainer = document.getElementById('notesContainer');
+        if (notesContainer) {
+            notesContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('removeButton')) {
+                    const index = e.target.getAttribute('data-index');
+                    const notes = JSON.parse(localStorage.getItem('notes')) || [];
+                    notes.splice(index, 1);
+                    localStorage.setItem('notes', JSON.stringify(notes));
+                    this.loadNotes();
+                }
+            });
+        } else {
+            console.error('Notes container not found in the DOM.');
+        }
+    
+        // Handle Back Button
+        const backButton = document.getElementById('backButton');
+        if (backButton) {
+            backButton.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+        } else {
+            console.error('Back button not found in the DOM.');
+        }
+    }
+
+    createNoteInput() {
+        const notesContainer = document.getElementById('notesContainer');
+        const noteInputContainer = document.createElement('div');
+        noteInputContainer.innerHTML = `
+            <textarea id="noteInput" placeholder="Type your note here..."></textarea>
+            <button id="saveButton">Save Note</button>
+        `;
+
+        notesContainer.appendChild(noteInputContainer);
 
         document.getElementById('saveButton').addEventListener('click', () => {
             const input = document.getElementById('noteInput').value;
             const messageDisplay = document.getElementById('messageDisplay');
+
             if (input.trim()) {
                 const notes = JSON.parse(localStorage.getItem('notes')) || [];
                 notes.push(input);
                 localStorage.setItem('notes', JSON.stringify(notes));
                 messageDisplay.textContent = `${messages.writer.storedMsg} ${new Date().toLocaleString()}`;
-                document.getElementById('noteInput').value = '';
-                document.getElementById('noteInputContainer').style.display = 'none';
                 this.loadNotes();
             } else {
                 messageDisplay.textContent = 'Please enter a valid note.';
             }
-        });
 
-        document.getElementById('notesContainer').addEventListener('click', (e) => {
-            if (e.target.classList.contains('removeButton')) {
-                const index = e.target.getAttribute('data-index');
-                const notes = JSON.parse(localStorage.getItem('notes')) || [];
-                notes.splice(index, 1);
-                localStorage.setItem('notes', JSON.stringify(notes));
-                this.loadNotes();
-            }
-        });
-
-        document.getElementById('backButton').addEventListener('click', () => {
-            window.location.href = 'index.html';
+            noteInputContainer.remove();
         });
     }
 }
-
