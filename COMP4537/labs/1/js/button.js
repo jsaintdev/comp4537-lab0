@@ -42,7 +42,7 @@ class AddButton extends Button {
     }
 }
 
-// SaveButton (Writer only)
+
 class SaveButton extends Button {
     constructor(writerScreen, noteInputContainer) {
         super('Save Note', 'saveButton', () => {
@@ -55,33 +55,47 @@ class SaveButton extends Button {
                 localStorage.setItem('notes', JSON.stringify(notes));
                 messageDisplay.textContent = `${messages.writer.storedMsg} ${new Date().toLocaleString()}`;
                 writerScreen.loadNotes();
+
+                // Notify observers about the saved notes
+                observer.notify('noteSaved', notes);
             } else {
                 messageDisplay.textContent = 'Please enter a valid note.';
             }
 
-            noteInputContainer.remove();
+            writerScreen.removeNoteInput();
         });
     }
 }
 
-// RemoveButton (Writer only)
+
 class RemoveButton extends Button {
     constructor(index, writerScreen) {
-        super(messages.writer.removeButton, `removeButton-${index}`, () => {
+        super(messages.writer.removeButton, `removeButton-${index}`, (event) => {
+            // Dynamically fetch the index from the button's attribute
+            const buttonIndex = parseInt(event.target.getAttribute('data-index'), 10);
             const notes = JSON.parse(localStorage.getItem('notes')) || [];
-            notes.splice(index, 1);
+            
+            // Log the current index and notes for debugging
+            console.log('Removing note at index:', buttonIndex);
+            console.log('Current notes:', notes);
+
+            // Remove the note and update storage
+            notes.splice(buttonIndex, 1);
             localStorage.setItem('notes', JSON.stringify(notes));
+
+            // Reload the notes to reflect changes
             writerScreen.loadNotes();
         });
     }
 
-    render() {
+    render(index) {
         const button = super.render();
         button.classList.add('removeButton');
-        button.setAttribute('data-index', this.id.split('-')[1]);
+        button.setAttribute('data-index', index); // Use the passed index directly
         return button;
-    }
+    }    
 }
+
 
 // BackButton (Writer and Reader)
 class BackButton extends Button {

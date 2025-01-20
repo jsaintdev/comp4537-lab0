@@ -7,7 +7,7 @@ class Note {
         return `
             <div class="note-item" style="display: flex; justify-content: space-between; align-items: center;">
                 <p style="margin: 0;">${this.content}</p>
-                <button class="removeButton" data-index="${index}">${removeButtonLabel}</button>
+                ${removeButtonLabel ? `<button class="removeButton" data-index="${index}">${removeButtonLabel}</button>` : ''}
             </div>
         `;
     }
