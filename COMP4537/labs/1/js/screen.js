@@ -135,11 +135,17 @@ class WriterScreen extends Screen {
             <div id="messageDisplay" class="top-right">${messages.writer.storedMsg || ''}</div>
             <div id="notesContainer" class="notes-list"></div>
         `);
+    
+        // Add the AddButton to the main content area
+        const notesContainer = document.getElementById('notesContainer');
+        const addButton = this.createButton(AddButton, this); // Create AddButton instance
+        notesContainer.after(addButton.render()); // Add the button before the notes list
+    
+        // Add BackButton to the footer
         this.setFooter([
-            this.createButton(AddButton, this), // Add button to create notes
-            this.createButton(BackButton) // Back button to return to the index
+            this.createButton(BackButton) // Only the BackButton goes in the footer
         ]);
-
+    
         this.renderNotes(); // Render all notes
 
         // Set up periodic updates for the "stored at" message
@@ -206,21 +212,14 @@ class WriterScreen extends Screen {
             const notesContainer = document.getElementById('notesContainer');
     
             if (notesContainer) {
-                // Re-render all notes to reflect updated indices
-                notesContainer.innerHTML = ''; // Clear existing notes
-                this.notes.forEach((note, newIndex) => {
-                    const noteHTML = note.toHTML(
-                        newIndex,
-                        messages.writer.removeButton,
-                        (i, newContent) => {
-                            this.notes[i].setContent(newContent); // Update content on edit
-                            this.saveNotesToStorage(); // Save changes to local storage
-                            this.notifyReader(); // Notify readers
-                        }
-                    );
+                // Remove the specific note's DOM element
+                const noteElement = notesContainer.querySelector(`[data-index="${index}"]`);
+                if (noteElement) {
+                    noteElement.remove(); // Remove the note element from the DOM
+                }
     
-                    notesContainer.appendChild(noteHTML); // Append the updated note
-                });
+                // Re-render remaining notes to update indices
+                this.renderNotes();
             } else {
                 console.error('notesContainer element not found in the DOM');
             }
@@ -228,7 +227,6 @@ class WriterScreen extends Screen {
             console.error(`Invalid index: ${index}. Unable to remove note.`);
         }
     }
-    
     
     renderNotes() {
         const notesContainer = document.getElementById('notesContainer');

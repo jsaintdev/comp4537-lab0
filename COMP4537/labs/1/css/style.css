@@ -1,0 +1,154 @@
+/* Base reset */
+body, html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    background-color: azure;
+    color: #333;
+}
+
+/* Overall layout */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100vh;
+    max-width: 100vw; /* Prevent overflow on very wide screens */
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 450px;
+    background-color: #fff; /* White background for content */
+    border: 1px solid #ddd; /* Subtle border for separation */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Charming title font */
+#mainTitle {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
+    color: #444;
+    text-align: center;
+    margin: 1rem 0;
+}
+
+/* Adjust for wider-than-taller aspect ratios */
+@media (min-aspect-ratio: 4/3) {
+    body {
+        margin: 0 auto;
+        padding: 10vh 0;
+    }
+}
+
+/* Title Area */
+header {
+    padding: 0.5rem 1rem;
+    text-align: center;
+    font-size: 1.5rem;
+    border-bottom: 1px solid #ddd;
+    background-color: azure;
+}
+
+main {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+footer {
+    padding: 0.5rem 1rem;
+    text-align: center;
+    border-top: 1px solid #ddd;
+    background-color: azure;
+}
+
+/* General Button Styling */
+button {
+    font-size: 1.5rem; /* Large text size */
+    font-weight: bold; /* Emphasized text */
+    padding: 1rem 2rem; /* Spacious padding for a large button */
+    border: none; /* Remove default borders */
+    border-radius: 10px; /* Rounded corners */
+    color: white; /* White text */
+    cursor: pointer; /* Pointer cursor on hover */
+    margin: 0.5rem; /* Spacing between buttons */
+    transition: transform 0.2s, box-shadow 0.2s; /* Add a hover effect */
+}
+
+/* Buttons */
+#writeButton {
+    background-color: cadetblue;
+}
+
+#readButton {
+    background-color: cornflowerblue;
+}
+
+#addButton {
+    background-color: darkolivegreen;
+}
+
+#backButton {
+    background-color: DimGray;
+}
+
+/* Remove Button */
+button {
+    background-color: chocolate;
+}
+
+/* Hover Effects */
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Focus Effects */
+button:focus {
+    outline: 2px solid white;
+    outline-offset: 2px;
+}
+
+.top-right {
+    position: absolute;
+    top: 0rem;
+    font-size: 0.9rem;
+    text-align: right;
+    margin-right: 1rem;
+    margin-top: 0.5rem;
+    color: #555;
+    align-self: flex-end;
+}
+
+.note-item {
+    margin: 1rem 0;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+main.reader-screen .note-item {
+    background-color: cornsilk;
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    word-wrap: break-word;
+}

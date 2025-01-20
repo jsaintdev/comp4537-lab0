@@ -55,6 +55,7 @@ class RemoveButton extends Button {
     render(index) {
         const button = super.render(); // Render the base button
         button.dataset.index = index; // Assign the note index as a data attribute
+        button.classList.add('remove');
         return button; // Return the button element
     }
 }
