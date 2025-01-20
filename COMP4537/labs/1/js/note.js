@@ -19,33 +19,33 @@ class Note {
         return this.content;
     }
 
-    toHTML(index, removeButtonLabel, onContentChange) {
-        const container = document.createElement('div');
-        container.classList.add('note-item');
-        container.dataset.index = index; // Unique index for targeting
+    toHTML(index, removeButtonText, onEdit) {
+        const noteElement = document.createElement('div');
+        noteElement.classList.add('note-item');
+        noteElement.setAttribute('data-index', index); // Assign data-index for easy identification
     
-        // Input element for editing note content
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.value = this.content;
-        input.dataset.index = index; // Assign the same index
-        input.addEventListener('input', (e) => {
-            this.setContent(e.target.value);
-            if (onContentChange) onContentChange(index, e.target.value);
+        const contentField = document.createElement('textarea');
+        contentField.value = this.content;
+    
+        // On content edit
+        contentField.addEventListener('input', (e) => {
+            onEdit(index, e.target.value);
         });
-        container.appendChild(input);
     
-        // Remove button
         const removeButton = document.createElement('button');
-        removeButton.textContent = removeButtonLabel;
-        removeButton.dataset.index = index; // Assign the same index
+        removeButton.textContent = removeButtonText;
         removeButton.addEventListener('click', () => {
-            onContentChange(index); // Trigger the removal logic
+            // Use the provided remove function
+            const writerScreen = new WriterScreen(); // Ensure you can call removeNoteAtIndex
+            writerScreen.removeNoteAtIndex(index);
         });
-        container.appendChild(removeButton);
     
-        return container; // Return the full container
+        noteElement.appendChild(contentField);
+        noteElement.appendChild(removeButton);
+    
+        return noteElement;
     }
+    
     
     
     
