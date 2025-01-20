@@ -1,107 +1,69 @@
-// Button base class
+// Updated Button classes
+
+// Base Button class
 class Button {
     constructor(label, id, onClick) {
-        this.label = label;
-        this.id = id;
-        this.onClick = onClick;
+        this.label = label; // Button label text
+        this.id = id; // Button ID for DOM reference
+        this.onClick = onClick; // Click event handler
     }
 
     render() {
-        const button = document.createElement('button');
-        button.textContent = this.label;
-        button.id = this.id;
-        button.addEventListener('click', this.onClick);
-        return button;
+        const button = document.createElement('button'); // Create button element
+        button.textContent = this.label; // Set button label
+        button.id = this.id; // Assign button ID
+        button.addEventListener('click', this.onClick); // Attach click event handler
+        return button; // Return the button element
     }
 }
 
-// WriteButton (Index only)
+// WriteButton (Index screen)
 class WriteButton extends Button {
     constructor() {
         super(messages.index.writeButton, 'writeButton', () => {
-            window.location.href = 'writer.html';
+            window.location.href = 'writer.html'; // Navigate to the Writer screen
         });
     }
 }
 
-// ReadButton (Index only)
+// ReadButton (Index screen)
 class ReadButton extends Button {
     constructor() {
         super(messages.index.readButton, 'readButton', () => {
-            window.location.href = 'reader.html';
+            window.location.href = 'reader.html'; // Navigate to the Reader screen
         });
     }
 }
 
-// AddButton (Writer only)
+// AddButton (Writer screen)
 class AddButton extends Button {
     constructor(writerScreen) {
         super(messages.writer.addButton, 'addButton', () => {
-            writerScreen.createNoteInput();
+            writerScreen.createNoteInput(); // Trigger note creation
         });
     }
 }
 
-
-class SaveButton extends Button {
-    constructor(writerScreen, noteInputContainer) {
-        super('Save Note', 'saveButton', () => {
-            const input = document.getElementById('noteInput').value;
-            const messageDisplay = document.getElementById('messageDisplay');
-
-            if (input.trim()) {
-                const notes = JSON.parse(localStorage.getItem('notes')) || [];
-                notes.push(input);
-                localStorage.setItem('notes', JSON.stringify(notes));
-                messageDisplay.textContent = `${messages.writer.storedMsg} ${new Date().toLocaleString()}`;
-                writerScreen.loadNotes();
-
-                // Notify observers about the saved notes
-                observer.notify('noteSaved', notes);
-            } else {
-                messageDisplay.textContent = 'Please enter a valid note.';
-            }
-
-            writerScreen.removeNoteInput();
-        });
-    }
-}
-
-
+// RemoveButton updated for correct integration
 class RemoveButton extends Button {
     constructor(index, writerScreen) {
-        super(messages.writer.removeButton, `removeButton-${index}`, (event) => {
-            // Dynamically fetch the index from the button's attribute
-            const buttonIndex = parseInt(event.target.getAttribute('data-index'), 10);
-            const notes = JSON.parse(localStorage.getItem('notes')) || [];
-            
-            // Log the current index and notes for debugging
-            console.log('Removing note at index:', buttonIndex);
-            console.log('Current notes:', notes);
-
-            // Remove the note and update storage
-            notes.splice(buttonIndex, 1);
-            localStorage.setItem('notes', JSON.stringify(notes));
-
-            // Reload the notes to reflect changes
-            writerScreen.loadNotes();
+        super(messages.writer.removeButton, `removeButton-${index}`, () => {
+            writerScreen.removeNoteAtIndex(index); // Call remove method in WriterScreen
         });
     }
 
     render(index) {
-        const button = super.render();
-        button.classList.add('removeButton');
-        button.setAttribute('data-index', index); // Use the passed index directly
-        return button;
-    }    
+        const button = super.render(); // Render the base button
+        button.dataset.index = index; // Assign the note index as a data attribute
+        return button; // Return the button element
+    }
 }
 
-
-// BackButton (Writer and Reader)
+// BackButton (For navigation back to Index)
 class BackButton extends Button {
     constructor() {
         super(messages.reader.backButton, 'backButton', () => {
-            window.location.href = 'index.html';
+            window.location.href = 'index.html'; // Navigate back to Index
         });
     }
 }

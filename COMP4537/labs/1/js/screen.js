@@ -57,187 +57,232 @@ class IndexScreen extends Screen {
     }
 }
 
-
-// ReaderScreen class derived from Screen
 class ReaderScreen extends Screen {
     constructor() {
-        super(messages.reader.title);
+        super(messages.reader.title); // Set the title for the Reader screen
+        this.notes = []; // Array to store notes from the Writer screen
     }
 
     initialize() {
-        this.setTitle();
+        this.setTitle(); // Set the screen title
         this.setMainContent(`
             <div id="updatedMsg" class="top-right">${messages.reader.updatedMsg || ''}</div>
             <div id="notesContainer" class="notes-list"></div>
         `);
-        this.setFooter([this.createButton(BackButton)]);
-    
-        this.loadNotes();
-    
-    // Subscribe to observer events
-    observer.subscribe('noteSaved', () => {
-        console.log('noteSaved event received in ReaderScreen');
-        this.loadNotes(); // Reload on save
-    });
+        this.setFooter([
+            this.createButton(BackButton) // Back button to return to the index
+        ]);
 
-    observer.subscribe('textChanged', (text) => {
-        this.previewText(text);
-    });
+        this.loadNotesFromStorage(); // Load notes initially
+
+        // Set up periodic updates for notes and the last updated time
+        setInterval(() => {
+            this.loadNotesFromStorage(); // Reload notes from storage
+
+            // Update the last updated time
+            const lastUpdated = new Date().toLocaleString();
+            const updatedMsg = document.getElementById('updatedMsg');
+            if (updatedMsg) {
+                updatedMsg.textContent = `${messages.reader.retrievedMsg || 'Last retrieved at:'} ${lastUpdated}`;
+            }
+
+            // Save the last updated time in local storage
+            localStorage.setItem('readerLastUpdated', lastUpdated);
+        }, 2000);
     }
 
-    previewText(text) {
+    loadNotesFromStorage() {
+        const storedNotes = JSON.parse(localStorage.getItem('notes')) || []; // Retrieve notes from local storage
+        this.notes = storedNotes; // Initialize the notes array
+        this.displayNotes(); // Display the notes
+    }
+
+    displayNotes() {
         const notesContainer = document.getElementById('notesContainer');
-        if (notesContainer) {
-            notesContainer.innerHTML = `
-                <div class="note-item">
-                    <p style="margin: 0;">${text}</p>
-                </div>
-            `;
+        if (!notesContainer) {
+            console.error('notesContainer element not found in the DOM');
+            return;
         }
-    }
 
-    loadNotes() {
-        const notesContainer = document.getElementById('notesContainer');
-        const notes = JSON.parse(localStorage.getItem('notes')) || [];
-    
-        if (notes.length === 0) {
-            notesContainer.innerHTML = '<p>No notes available.</p>';
+        // Clear the container before re-rendering
+        notesContainer.innerHTML = '';
+
+        if (this.notes.length === 0) {
+            notesContainer.textContent = 'No notes available.'; // Display a placeholder if no notes exist
         } else {
-            notesContainer.innerHTML = notes.map((noteContent, index) => {
-                const note = new Note(noteContent);
-                // Pass a placeholder or an empty string if no button is required for notes
-                return note.toHTML(index, '');
-            }).join('');
+            this.notes.forEach((content) => {
+                const noteElement = document.createElement('div');
+                noteElement.classList.add('note-item');
+                noteElement.textContent = content;
+                notesContainer.appendChild(noteElement);
+            });
         }
-    
-        const updatedMsg = document.getElementById('updatedMsg');
-        updatedMsg.textContent = `${messages.reader.retrievedMsg || 'Last retrieved at:'} ${new Date().toLocaleString()}`;
     }
 }
 
 
-
-// WriterScreen class derived from Screen
+// Updated WriterScreen class
 class WriterScreen extends Screen {
     constructor() {
-        super(messages.writer.title);
-        this.inputContainer = null; // Track the input container
+        super(messages.writer.title); // Set the title for the Writer screen
+        this.notes = this.loadNotesFromStorage(); // Load notes from local storage
+        this.subject = new Subject(); // Subject for the Observer pattern
     }
 
     initialize() {
-        this.setTitle();
+        this.setTitle(); // Set the screen title
         this.setMainContent(`
             <div id="messageDisplay" class="top-right">${messages.writer.storedMsg || ''}</div>
             <div id="notesContainer" class="notes-list"></div>
         `);
         this.setFooter([
-            this.createButton(AddButton, this), // Initialize the Add button
-            this.createButton(BackButton)
+            this.createButton(AddButton, this), // Add button to create notes
+            this.createButton(BackButton) // Back button to return to the index
         ]);
 
-        this.loadNotes();
+        this.renderNotes(); // Render all notes
+
+        // Set up periodic updates for the "stored at" message
+        setInterval(() => {
+            const messageDisplay = document.getElementById('messageDisplay');
+            if (messageDisplay) {
+                const lastSaved = new Date().toLocaleString();
+                messageDisplay.textContent = `${messages.writer.storedMsg || 'Last saved at:'} ${lastSaved}`;
+                
+                // Save the last saved time in local storage
+                localStorage.setItem('writerLastSaved', lastSaved);
+            }
+        }, 2000);
     }
 
-    loadNotes() {
+    loadNotesFromStorage() {
+        const notes = JSON.parse(localStorage.getItem('notes')) || []; // Retrieve notes from local storage
+        return notes.map(content => new Note(content)); // Convert stored strings back to Note objects
+    }
+
+    saveNotesToStorage() {
+        const noteContents = this.notes.map(note => note.getContent()); // Extract content from notes
+        localStorage.setItem('notes', JSON.stringify(noteContents)); // Save to local storage
+    }
+
+    addNote(content) {
         const notesContainer = document.getElementById('notesContainer');
-        const notes = JSON.parse(localStorage.getItem('notes')) || [];
+        const note = new Note(content); // Create a new note instance
+
+        // Set up content change notification
+        note.onContentChange = () => {
+            this.saveNotesToStorage(); // Save notes whenever content changes
+            this.notifyReader(); // Notify readers when note content changes
+        };
+
+        // Add the note to the notes array
+        this.notes.push(note);
+
+        // Render the note
+        const noteIndex = this.notes.length - 1;
+        const noteHTML = note.toHTML(noteIndex, messages.writer.removeButton, (index, newContent) => {
+            this.notes[index].setContent(newContent); // Update the note content
+            this.saveNotesToStorage(); // Save updated notes
+            this.notifyReader(); // Notify readers about the changes
+        });
+
+        // Append the note to the container
+        notesContainer.appendChild(noteHTML);
+        this.saveNotesToStorage(); // Save notes after adding
+    }
+
+    removeNoteAtIndex(index) {
+        if (index >= 0 && index < this.notes.length) {
+            // Remove the note from the array
+            this.notes.splice(index, 1);
     
-        if (notes.length === 0) {
-            notesContainer.innerHTML = '<p>No notes available.</p>';
+            // Save updated notes to local storage
+            this.saveNotesToStorage();
+    
+            // Notify ReaderScreen to update its notes
+            this.notifyReader();
+    
+            // Locate the parent container
+            const notesContainer = document.getElementById('notesContainer');
+    
+            if (notesContainer) {
+                // Re-render all notes to reflect updated indices
+                notesContainer.innerHTML = ''; // Clear existing notes
+                this.notes.forEach((note, newIndex) => {
+                    const noteHTML = note.toHTML(
+                        newIndex,
+                        messages.writer.removeButton,
+                        (i, newContent) => {
+                            this.notes[i].setContent(newContent); // Update content on edit
+                            this.saveNotesToStorage(); // Save changes to local storage
+                            this.notifyReader(); // Notify readers
+                        }
+                    );
+    
+                    notesContainer.appendChild(noteHTML); // Append the updated note
+                });
+            } else {
+                console.error('notesContainer element not found in the DOM');
+            }
         } else {
-            notesContainer.innerHTML = notes.map((noteContent, index) => {
-                return `
-                    <div class="note-container">
-                        <p>${noteContent}</p>
-                        <button class="removeButton" data-index="${index}">Remove</button>
-                    </div>
-                `;
-            }).join('');
+            console.error(`Invalid index: ${index}. Unable to remove note.`);
         }
+    }
     
-        // Add event listeners to all remove buttons
-        document.querySelectorAll('.removeButton').forEach((button) => {
-            button.addEventListener('click', (event) => {
-                const buttonIndex = parseInt(event.target.getAttribute('data-index'), 10);
-                const notes = JSON.parse(localStorage.getItem('notes')) || [];
     
-                // Remove the note from the array and update storage
-                notes.splice(buttonIndex, 1);
-                localStorage.setItem('notes', JSON.stringify(notes));
+    renderNotes() {
+        const notesContainer = document.getElementById('notesContainer');
+        notesContainer.innerHTML = ''; // Clear existing notes
     
-                // Reload notes to reflect the changes
-                this.loadNotes();
-            });
+        this.notes.forEach((note, index) => {
+            const noteHTML = note.toHTML(
+                index,
+                messages.writer.removeButton,
+                (i, newContent) => {
+                    this.notes[i].setContent(newContent); // Update content on edit
+                    this.saveNotesToStorage(); // Save changes to local storage
+                    this.notifyReader(); // Notify readers
+                }
+            );
+    
+            notesContainer.appendChild(noteHTML); // Add note to the DOM
         });
     }
     
-
     createNoteInput() {
-        if (this.inputContainer) return;
-
-        const notesContainer = document.getElementById('notesContainer');
-        this.inputContainer = document.createElement('div');
-        this.inputContainer.id = 'noteInputContainer';
-
-        const textarea = document.createElement('textarea');
-        textarea.id = 'noteInput';
-        textarea.placeholder = 'Type your note here...';
-
-        // Notify observers on text input
-        textarea.addEventListener('input', () => {
-            observer.notify('textChanged', textarea.value);
-        });
-        this.inputContainer.appendChild(textarea);
-
-        const saveButton = this.createButton(SaveButton, this, this.inputContainer);
-        this.inputContainer.appendChild(saveButton.render());
-
-        notesContainer.appendChild(this.inputContainer);
-
-        const addButton = document.getElementById('addButton');
-        if (addButton) addButton.style.display = 'none';
+        this.addNote(''); // Add a new blank note
     }
-    
-    removeNoteInput() {
-        // Remove the input container
-        if (this.inputContainer) {
-            this.inputContainer.remove();
-            this.inputContainer = null;
-        }
 
-        // Show the "Add" button again
-        const addButton = document.getElementById('addButton');
-        if (addButton) addButton.style.display = '';
+    notifyReader() {
+        this.subject.notifyObservers(this.notes.map((note) => note.getContent())); // Notify observers with updated note contents
     }
 }
 
 
-// Observer Class
-class Observer {
+
+
+// Subject class for implementing the Observer pattern
+class Subject {
     constructor() {
-        this.events = {};
+        this.observers = []; // Array to store observers
     }
 
-    // Subscribe to an event
-    subscribe(event, listener) {
-        if (!this.events[event]) {
-            this.events[event] = [];
-        }
-        this.events[event].push(listener);
-        console.log(`Subscribed to event: ${event}`);
+    // Adds a new observer to the list
+    addObserver(observer) {
+        this.observers.push(observer);
     }
 
-    // Notify all subscribers of an event
-    notify(event, data) {
-        if (this.events[event]) {
-            console.log(`Notifying event: ${event} with data:`, data);
-            this.events[event].forEach((listener) => listener(data));
-        } else {
-            console.warn(`No subscribers for event: ${event}`);
-        }
+    // Removes an observer from the list
+    removeObserver(observer) {
+        this.observers = this.observers.filter(obs => obs !== observer);
+    }
+
+    // Notifies all observers with optional data
+    notifyObservers(data) {
+        this.observers.forEach(observer => {
+            if (observer.update) {
+                observer.update(data); // Call the update method on each observer
+            }
+        });
     }
 }
-
-
-// Singleton instance of Observer
-const observer = new Observer();
