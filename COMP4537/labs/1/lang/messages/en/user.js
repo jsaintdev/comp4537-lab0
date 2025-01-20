@@ -14,6 +14,7 @@ const messages = {
     reader: {
         title: "Read Notes",
         updatedMsg: "Updated at: ",
+        noNotes: "No notes available",
         backButton: "Back"
     }
 };

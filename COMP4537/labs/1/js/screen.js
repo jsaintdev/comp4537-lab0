@@ -83,7 +83,7 @@ class ReaderScreen extends Screen {
             const lastUpdated = new Date().toLocaleString();
             const updatedMsg = document.getElementById('updatedMsg');
             if (updatedMsg) {
-                updatedMsg.textContent = `${messages.reader.retrievedMsg || 'Last retrieved at:'} ${lastUpdated}`;
+                updatedMsg.textContent = `${messages.reader.updatedMsg} ${lastUpdated}`;
             }
 
             // Save the last updated time in local storage
@@ -108,7 +108,7 @@ class ReaderScreen extends Screen {
         notesContainer.innerHTML = '';
 
         if (this.notes.length === 0) {
-            notesContainer.textContent = 'No notes available.'; // Display a placeholder if no notes exist
+            notesContainer.textContent = messages.reader.noNotes; // Display a placeholder if no notes exist
         } else {
             this.notes.forEach((content) => {
                 const noteElement = document.createElement('div');
@@ -153,7 +153,7 @@ class WriterScreen extends Screen {
             const messageDisplay = document.getElementById('messageDisplay');
             if (messageDisplay) {
                 const lastSaved = new Date().toLocaleString();
-                messageDisplay.textContent = `${messages.writer.storedMsg || 'Last saved at:'} ${lastSaved}`;
+                messageDisplay.textContent = `${messages.writer.storedMsg} ${lastSaved}`;
                 
                 // Save the last saved time in local storage
                 localStorage.setItem('writerLastSaved', lastSaved);
