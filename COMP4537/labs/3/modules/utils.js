@@ -1,8 +1,8 @@
 const messages = require('../lang/messages/en');
 
-function getDate(name) {
+function getDate() {
     const time = new Date().toString();
-    return `<p class="bluemessage">${messages.greeting.replace('%name%', name).replace('%time%', time)}</p>`;
+    return `${time}`;
 }
 
 module.exports = { getDate };
