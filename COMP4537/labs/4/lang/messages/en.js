@@ -6,7 +6,7 @@ const messages = {
     },
 
     errors: {
-        badrequest: "Error 400: The server could not process the request",
+        badrequest: "Error 400: The request is invalid",
         serverError: "Error 500: Internal Server Error"
     }
 };

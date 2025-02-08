@@ -1,4 +1,4 @@
-class Dictionary {
+class Library {
     constructor() {
         this.dictionary = new Map();
         this.entries = 0;
@@ -21,3 +21,5 @@ class Dictionary {
     }
 
 }
+
+module.exports = Library;
