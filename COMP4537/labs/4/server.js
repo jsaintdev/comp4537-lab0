@@ -88,6 +88,7 @@ const server = http.createServer((req, res) => {
 
         if (query.word) {
             console.log("Requested word: ", query.word);
+            console.log("Pathname: ", pathname);
         }
 
         // // Validate the query
@@ -100,6 +101,9 @@ const server = http.createServer((req, res) => {
         // }
         // Validate the URL
         else if (pathname === endPointRoot && query.word) {
+
+            console.log ("Word Exists: ", library.checkWordExists(query.word));
+            
             // Check if word exists
             if (library.checkWordExists(query.word)) {
                 // If so, retrieve the entry
