@@ -1,6 +1,6 @@
 const messages = {
     request: {
-        recorded: "Request # %request%  New entry recorded: %word% : %definition%",
+        recorded: "Request # %request%  New entry recorded: %word% : %definition%. Dictionary now contains %entries% entries",
         exists: "Request # %request%: word %word% already exists",
         notFound: "Request # %request%: word %word% not found",
     },

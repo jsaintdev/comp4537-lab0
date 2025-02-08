@@ -70,7 +70,7 @@ const server = http.createServer((req, res) => {
                     "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
                     "Content-Type": "text/plain"
                 });
-                const messageRecorded = messages.request.recorded.replace("%request%", counter).replace("%word%", newEntry.word).replace("%definition%", newEntry.definition);
+                const messageRecorded = messages.request.recorded.replace("%request%", counter).replace("%word%", newEntry.word).replace("%definition%", newEntry.definition).replace("%entries%", library.dictionary.size);
                 res.end(messageRecorded);               
             }
         });
@@ -86,14 +86,6 @@ const server = http.createServer((req, res) => {
         const pathname = parsedUrl.pathname;
         const query = parsedUrl.query;
 
-        if (query.word) {
-            console.log("Requested word: ", query.word);
-            console.log("Pathname: ", pathname);
-            console.log("Pathname matches endPointRoot:", pathname === endPointRoot);
-            console.log("Pathname value:", pathname);
-            console.log("endPointRoot value:", endPointRoot);
-        }
-
         // Validate the query
         if (query.word.trim() === "" || !/^[a-zA-Z]+$/.test(query.word)) {
             res.writeHead(400, {
@@ -105,13 +97,11 @@ const server = http.createServer((req, res) => {
         // Validate the URL
         else if (pathname === endPointRoot && query.word) {
 
-            console.log ("Word Exists: ", library.checkWordExists(query.word));
-
             // Check if word exists
             if (library.checkWordExists(query.word)) {
+
                 // If so, retrieve the entry
                 let getdef = library.getWord(query.word);
-                console.log("Definition retrieved:", getdef);
                 res.writeHead(200, {
                     "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
                     "Content-Type": "application/json"
@@ -120,6 +110,7 @@ const server = http.createServer((req, res) => {
                     word: query.word,
                     definition: getdef
                 }));
+
                 console.log("Response JSON:", JSON.stringify({ word: query.word, definition: getdef }));
             }
             // Else return an error message
@@ -127,7 +118,7 @@ const server = http.createServer((req, res) => {
                 console.log("The requested word does not exist")
                 res.writeHead(404, {
                     "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
-                    "Content-Type": "text/html"
+                    "Content-Type": "text/plain"
                 });
                 const messagenotFound = messages.request.notFound.replace("%request%", counter).replace("%word%", query.word);
                 res.end(messagenotFound);
