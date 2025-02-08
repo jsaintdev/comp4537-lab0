@@ -104,6 +104,7 @@ const server = http.createServer((req, res) => {
             if (library.checkWordExists(query.word)) {
                 // If so, retrieve the entry
                 let getdef = library.getWord(query.word);
+                console.log("Definition retrieved:", getdef);
                 res.writeHead(200, {
                     "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
                     "Content-Type": "application/json"
@@ -112,6 +113,7 @@ const server = http.createServer((req, res) => {
                     word: query.word,
                     definition: getdef
                 }));
+                console.log("Response JSON:", JSON.stringify({ word: query.word, definition: getdef }));
             }
             // Else return an error message
             else {
