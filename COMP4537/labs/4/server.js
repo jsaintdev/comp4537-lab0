@@ -89,6 +89,9 @@ const server = http.createServer((req, res) => {
         if (query.word) {
             console.log("Requested word: ", query.word);
             console.log("Pathname: ", pathname);
+            console.log("Pathname matches endPointRoot:", pathname === endPointRoot);
+            console.log("Pathname value:", pathname);
+            console.log("endPointRoot value:", endPointRoot);
         }
 
         // // Validate the query
