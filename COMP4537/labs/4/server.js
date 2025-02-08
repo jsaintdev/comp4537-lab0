@@ -50,28 +50,37 @@ const server = http.createServer((req, res) => {
             if (newEntry.word.trim() === "" || newEntry.definition.trim() === "" || !/^[a-zA-Z]+$/.test(newEntry.word)) {
                 res.writeHead(400, {
                     "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
-                    "Content-Type": "text/plain"
+                    "Content-Type": "application/json"
                 });
-                res.end(messages.errors.badrequest);
+                res.end(JSON.stringify({
+                    message: messages.errors.badrequest,
+                    requests: counter
+                })); 
             }
             // Return a message if it already exists
             else if (library.checkWordExists(newEntry.word)) {
                 res.writeHead(400, {
                     "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
-                    "Content-Type": "text/plain"
+                    "Content-Type": "application/json"
                 });
                 const messageExists = messages.request.exists.replace("%request%", counter).replace("%word%", newEntry.word);
-                res.end(messageExists);
+                res.end(JSON.stringify({
+                    message: messageExists,
+                    requests: counter
+                }));  
             } else {
                 // Otherwise, add the word and definition to the dictionary
                 library.addWord(newEntry.word, newEntry.definition);
                 // Return success message
                 res.writeHead(201, {
                     "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
-                    "Content-Type": "text/plain"
+                    "Content-Type": "application/json"
                 });
                 const messageRecorded = messages.request.recorded.replace("%request%", counter).replace("%word%", newEntry.word).replace("%definition%", newEntry.definition).replace("%entries%", library.dictionary.size);
-                res.end(messageRecorded);               
+                res.end(JSON.stringify({
+                    message: messageRecorded,
+                    requests: counter
+                }));             
             }
         });
     }
@@ -90,9 +99,12 @@ const server = http.createServer((req, res) => {
         if (query.word.trim() === "" || !/^[a-zA-Z]+$/.test(query.word)) {
             res.writeHead(400, {
                 "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
-                "Content-Type": "text/plain"
+                "Content-Type": "application/json"
             });
-            res.end(messages.errors.badrequest);
+            res.end(JSON.stringify({
+                message: messages.errors.badrequest,
+                requests: counter
+            }));
         }
         // Validate the URL
         else if (pathname === endPointRoot && query.word) {
@@ -119,10 +131,13 @@ const server = http.createServer((req, res) => {
                 console.log("The requested word does not exist")
                 res.writeHead(404, {
                     "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
-                    "Content-Type": "text/plain"
+                    "Content-Type": "application/json"
                 });
                 const messagenotFound = messages.request.notFound.replace("%request%", counter).replace("%word%", query.word);
-                res.end(messagenotFound);
+                res.end(JSON.stringify({
+                    message: messagenotFound,
+                    requests: counter
+                }));
             }
         }
     }
