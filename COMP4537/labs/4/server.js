@@ -86,6 +86,10 @@ const server = http.createServer((req, res) => {
         const pathname = parsedUrl.pathname;
         const query = parsedUrl.query;
 
+        if (query.word) {
+            console.log("Requested word: ", query.word);
+        }
+
         // Validate the query
         if (query.word.trim() === "" || !/^[a-zA-Z]+$/.test(query.word)) {
             res.writeHead(400, {
@@ -100,7 +104,6 @@ const server = http.createServer((req, res) => {
             if (library.checkWordExists(query.word)) {
                 // If so, retrieve the entry
                 let getdef = library.getWord(query.word);
-                // **TO DO** change to server 1 //
                 res.writeHead(200, {
                     "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
                     "Content-Type": "application/json"
@@ -121,15 +124,6 @@ const server = http.createServer((req, res) => {
                 res.end(messagenotFound);
             }
         }
-    }
-
-    // For debugging
-    if (req.method === GET && req.url === "/api/debug/dictionary") {
-        res.writeHead(200, {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
-        });
-        res.end(JSON.stringify([...library.dictionary]));
     }
 });
 
