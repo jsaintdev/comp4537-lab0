@@ -11,7 +11,7 @@ let port = 3000;
 let counter = 0;
 const GET = 'GET';
 const POST = 'POST';
-const endPointRoot = "/api/definitions/"
+const endPointRoot = "/COMP4537/labs/4/api/definitions/"
 const library = new Library();
 
 // HTTP server
@@ -103,7 +103,7 @@ const server = http.createServer((req, res) => {
         else if (pathname === endPointRoot && query.word) {
 
             console.log ("Word Exists: ", library.checkWordExists(query.word));
-            
+
             // Check if word exists
             if (library.checkWordExists(query.word)) {
                 // If so, retrieve the entry
