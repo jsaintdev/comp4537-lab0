@@ -17,6 +17,8 @@ const library = new Library();
 // HTTP server
 const server = http.createServer((req, res) => {
 
+    res.setHeader("Access-Control-Allow-Origin", "https://comp-4537-six.vercel.app");
+
     // Handle Preflight requests
     if (req.method === "OPTIONS") {
         res.writeHead(204, {
