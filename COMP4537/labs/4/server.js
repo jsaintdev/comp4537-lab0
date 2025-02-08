@@ -122,6 +122,15 @@ const server = http.createServer((req, res) => {
             }
         }
     }
+
+    // For debugging
+    if (req.method === GET && req.url === "/api/debug/dictionary") {
+        res.writeHead(200, {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app"
+        });
+        res.end(JSON.stringify([...library.dictionary]));
+    }
 });
 
 // Start server listener
