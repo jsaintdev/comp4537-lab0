@@ -90,14 +90,14 @@ const server = http.createServer((req, res) => {
             console.log("Requested word: ", query.word);
         }
 
-        // Validate the query
-        if (query.word.trim() === "" || !/^[a-zA-Z]+$/.test(query.word)) {
-            res.writeHead(400, {
-                "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
-                "Content-Type": "text/plain"
-            });
-            res.end(messages.errors.badrequest);
-        }
+        // // Validate the query
+        // if (query.word.trim() === "" || !/^[a-zA-Z]+$/.test(query.word)) {
+        //     res.writeHead(400, {
+        //         "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
+        //         "Content-Type": "text/plain"
+        //     });
+        //     res.end(messages.errors.badrequest);
+        // }
         // Validate the URL
         else if (pathname === endPointRoot && query.word) {
             // Check if word exists
