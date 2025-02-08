@@ -18,7 +18,7 @@ const library = new Library();
 const server = http.createServer((req, res) => {
 
     // **TO DO** Change to Server 1
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Origin", "https://comp-4537-six.vercel.app");
     // Increment Request counter
     counter++;
 
