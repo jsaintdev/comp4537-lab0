@@ -17,12 +17,21 @@ const library = new Library();
 // HTTP server
 const server = http.createServer((req, res) => {
 
-    // Increment Request counter
-    counter++;
+    // Handle Preflight requests
+    if (req.method === "OPTIONS") {
+        res.writeHead(204, {
+            "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type"
+        });
+        res.end();
+        return;
+    }
 
     // Add a new word to the dictionary
     if (req.method === POST) {
         console.log("The server received a POST request");
+        counter++;
 
         let body = "";
         // Start receiving data
@@ -68,6 +77,7 @@ const server = http.createServer((req, res) => {
     // Retrieve requested word
     if (req.method === GET) {
         console.log("The server received a GET request:", req.url);
+        counter++;
 
         // Parse the incoming URL
         const parsedUrl = url.parse(req.url, true);
