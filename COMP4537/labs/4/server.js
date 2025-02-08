@@ -8,6 +8,7 @@ const messages = require("./lang/messages/en.js");
 
 // Variables
 let port = 3000;
+let counter = 0;
 const GET = 'GET';
 const POST = 'POST';
 const endPointRoot = "/API/definitions/"
@@ -16,10 +17,8 @@ const serverDictionary = new dct;
 // HTTP server
 const server = http.createServer((req, res) => {
 
-    // *** CHANGE TO SERVER 1 ***
-    res.writeHead(200, {
-        "Access-Control-Allow-Origin": "*"
-    });
+    // Increment Request counter
+    counter++;
 
     // POST: adding a word to the dictionary
     if (req.method === POST) {
@@ -39,14 +38,36 @@ const server = http.createServer((req, res) => {
     if (req.method === GET) {
         console.log("The server received a GET request:", req.url);
 
-        res.setHeader("Content-Type", "application/json");
-
         // Parse the incoming URL
         const parsedUrl = url.parse(req.url, true);
         const pathname = parsedUrl.pathname;
         const query = parsedUrl.query;
 
-
+        // Validate the URL
+        if (pathname === endPointRoot && query.word) {
+            // Check if word exists
+            if (serverDictionary.checkWordExists(query.word)) {
+                // If so, retrieve the entry
+                let getdef = serverDictionary.getWord(query.word);
+                // **TO DO** change to server 1 //
+                res.writeHead(200, {
+                    "Access-Control-Allow-Origin": "*",
+                    "Content-Type": "application/json"
+                });
+                res.end(JSON.stringify({ word: query.word, definition: getdef }));
+            }
+            // Else return an error message
+            else {
+                console.log("The requested word does not exist")
+                res.writeHead(404, {
+                // **TO DO** change to server 1 //
+                    "Access-Control-Allow-Origin": "*",
+                    "Content-Type": "text/html"
+                });
+                const messagenotFound = messages.request.notFound.replace("%request%", counter).replace("%word%", query.word);
+                res.end(messagenotFound);
+            }
+        }
     }
 });
 

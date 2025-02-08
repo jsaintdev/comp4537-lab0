@@ -1,16 +1,12 @@
 const messages = {
     request: {
-        request: "Request # ",
-        recorded: "New entry recorded:",
-        entry: "%word% : %definition%"
+        recorded: "Request # %request%  New entry recorded: %word% : %definition%",
+        exists: "Request # %request%: word %word% already exists",
+        notFound: "Request # %request%: word %word% not found",
     },
-
-    exists: "Warning! %word% already exists",
 
     errors: {
         badrequest: "Error 400: The server could not process the request",
-        wordNotFound: "Error 404: The requesed word %word% was not found",
-        pageNotFound: "Error 404: The requested page does not exist",
         serverError: "Error 500: Internal Server Error"
     }
 };

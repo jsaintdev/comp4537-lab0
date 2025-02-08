@@ -1,14 +1,23 @@
 class Dictionary {
     constructor() {
-        this.dictionary = [];
-        this.request_counter = 0;
+        this.dictionary = new Map();
+        this.entries = 0;
     }
 
-    addWord(word, definition) {
-
+    // Check if a word exists already
+    checkWordExists(thatWord) {
+        return this.dictionary.has(thatWord);
     }
 
-    retrieveDefinition(word) {
-        
+    // Add a new word
+    addWord(newWord, newDefinition) {
+        this.dictionary.set(newWord, newDefinition);
+        ++this.entries;
     }
+
+    // Retrieve an existing word definition
+    getWord(thatWord) {
+        return this.dictionary.get(thatWord);
+    }
+
 }
