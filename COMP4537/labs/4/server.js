@@ -11,7 +11,7 @@ let port = 3000;
 let counter = 0;
 const GET = 'GET';
 const POST = 'POST';
-const endPointRoot = "/API/definitions/"
+const endPointRoot = "/api/definitions/"
 const library = new Library();
 
 // HTTP server
