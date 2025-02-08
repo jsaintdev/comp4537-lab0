@@ -108,10 +108,11 @@ const server = http.createServer((req, res) => {
                 });
                 res.end(JSON.stringify({
                     word: query.word,
-                    definition: getdef
+                    definition: getdef,
+                    requests: counter
                 }));
 
-                console.log("Response JSON:", JSON.stringify({ word: query.word, definition: getdef }));
+                console.log("Response JSON:", JSON.stringify({ word: query.word, definition: getdef, requests: counter }));
             }
             // Else return an error message
             else {
