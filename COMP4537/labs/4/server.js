@@ -17,8 +17,6 @@ const library = new Library();
 // HTTP server
 const server = http.createServer((req, res) => {
 
-    // **TO DO** Change to Server 1
-    res.setHeader("Access-Control-Allow-Origin", "https://comp-4537-six.vercel.app");
     // Increment Request counter
     counter++;
 
@@ -40,6 +38,7 @@ const server = http.createServer((req, res) => {
             // Make sure word and definition are not null, and that word is only letters
             if (newEntry.word.trim() === "" || newEntry.definition.trim() === "" || !/^[a-zA-Z]+$/.test(newEntry.word)) {
                 res.writeHead(400, {
+                    "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
                     "Content-Type": "text/plain"
                 });
                 res.end(messages.errors.badrequest);
@@ -47,6 +46,7 @@ const server = http.createServer((req, res) => {
             // Return a message if it already exists
             else if (library.checkWordExists(newEntry.word)) {
                 res.writeHead(400, {
+                    "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
                     "Content-Type": "text/plain"
                 });
                 const messageExists = messages.request.exists.replace("%request%", counter).replace("%word%", newEntry.word);
@@ -56,6 +56,7 @@ const server = http.createServer((req, res) => {
                 library.addWord(newEntry.word, newEntry.definition);
                 // Return success message
                 res.writeHead(201, {
+                    "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
                     "Content-Type": "text/plain"
                 });
                 const messageRecorded = messages.request.recorded.replace("%request%", counter).replace("%word%", newEntry.word).replace("%definition%", newEntry.definition);
@@ -76,6 +77,7 @@ const server = http.createServer((req, res) => {
         // Validate the query
         if (query.word.trim() === "" || !/^[a-zA-Z]+$/.test(query.word)) {
             res.writeHead(400, {
+                "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
                 "Content-Type": "text/plain"
             });
             res.end(messages.errors.badrequest);
@@ -88,6 +90,7 @@ const server = http.createServer((req, res) => {
                 let getdef = library.getWord(query.word);
                 // **TO DO** change to server 1 //
                 res.writeHead(200, {
+                    "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
                     "Content-Type": "application/json"
                 });
                 res.end(JSON.stringify({
@@ -99,8 +102,7 @@ const server = http.createServer((req, res) => {
             else {
                 console.log("The requested word does not exist")
                 res.writeHead(404, {
-                    // **TO DO** change to server 1 //
-                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Origin": "https://comp-4537-six.vercel.app",
                     "Content-Type": "text/html"
                 });
                 const messagenotFound = messages.request.notFound.replace("%request%", counter).replace("%word%", query.word);
