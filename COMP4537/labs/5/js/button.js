@@ -17,7 +17,7 @@ class Button {
 class DefaultPOSTButton extends Button {
     constructor() {
         super(messages.index.insert, 'defaultPOSTButton', () => {
-            // To Do: trigger default POST
+            defaultPOST();
         });
     }
 }
