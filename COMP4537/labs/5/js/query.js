@@ -44,7 +44,6 @@ async function defaultPOST() {
     };
 }
 
-
 // Verifies if the input from the text box is a valid POST or GET request
 async function processQuery() {
     const input = document.getElementById("customquery").value.trim();
@@ -94,7 +93,6 @@ async function customPOST(data) {
     xhttp.send(params.toString());
 }
 
-
 // Sends a valid GET request to /query for user-submitted SELECT queries
 async function customGET(sqlQuery) {
     try {
@@ -125,7 +123,6 @@ async function customGET(sqlQuery) {
         displayMessage(messages.error.get + ": " + err.message);
     }
 }
-
 
 // Helper function to update the display message
 function displayMessage(newMessage) {
