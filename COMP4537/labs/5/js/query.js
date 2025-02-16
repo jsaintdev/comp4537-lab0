@@ -63,17 +63,27 @@ async function processQuery() {
 }
 
 // Sends a valid POST request to /query for user-submitted INSERT queries
-async function customPOST(sqlQuery) {
+async function customPOST(data) {
     try {
-        const response = await fetch(endpoint + "/query", {
+        // Convert data array to URL-encoded format
+        const params = new URLSearchParams();
+        data.forEach(item => {
+            params.append("name", item.name);
+            params.append("date", item.date);
+        });
+
+        const response = await fetch(`${endpoint}/posts`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ sql: sqlQuery })
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: params.toString()
         });
 
         const result = await response.json();
+
         if (response.ok) {
-            displayMessage(messages.response.post);
+            displayMessage(messages.response.post + `: Successfully inserted ${result.rowsInserted} row(s).`);
         } else {
             displayMessage(messages.error.post + ": " + result.error);
         }
@@ -82,17 +92,25 @@ async function customPOST(sqlQuery) {
     }
 }
 
+
 // Sends a valid GET request to /query for user-submitted SELECT queries
 async function customGET(sqlQuery) {
     try {
-        const response = await fetch(`${endpoint}/query?sql=${encodeURIComponent(sqlQuery)}`, {
-            method: "GET"
+        // Convert SQL query to URL-encoded format
+        const params = new URLSearchParams();
+        params.append("sql", sqlQuery);
+
+        const response = await fetch(`${endpoint}/query?${params.toString()}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
         });
 
         const result = await response.json();
         if (response.ok) {
             if (Array.isArray(result) && result.length > 0) {
-                // Format results for display with line breaks
+                // Format results for display
                 const formattedResults = result.map(row => `${row.id}: ${row.name}, ${row.date}`).join("<br>");
                 displayMessage(messages.response.get + ":<br>" + formattedResults);
             } else {
@@ -105,6 +123,7 @@ async function customGET(sqlQuery) {
         displayMessage(messages.error.get + ": " + err.message);
     }
 }
+
 
 // Helper function to update the display message
 function displayMessage(newMessage) {
