@@ -63,33 +63,32 @@ async function processQuery() {
 }
 
 // Sends a valid POST request to /query for user-submitted INSERT queries
-async function customPOST(data) {
-    try {
-        // Convert data array to URL-encoded format
-        const params = new URLSearchParams();
-        data.forEach(item => {
-            params.append("name", item.name);
-            params.append("date", item.date);
-        });
+function customPOST(data) {
+    const xhttp = new XMLHttpRequest();
+    const params = new URLSearchParams();
 
-        const response = await fetch(`${endpoint}/posts`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: params.toString()
-        });
+    // Convert the data array to a URL-encoded string
+    data.forEach(item => {
+        params.append("name", item.name);
+        params.append("date", item.date);
+    });
 
-        const result = await response.json();
+    xhttp.open("POST", `${endpoint}/posts`, true);
+    xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-        if (response.ok) {
-            displayMessage(messages.response.post + `: Successfully inserted ${result.rowsInserted} row(s).`);
-        } else {
-            displayMessage(messages.error.post + ": " + result.error);
+    xhttp.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                const result = JSON.parse(this.responseText);
+                displayMessage(messages.response.post + `: Successfully inserted ${result.rowsInserted} row(s).`);
+            } else {
+                const error = JSON.parse(this.responseText).error;
+                displayMessage(messages.error.post + ": " + error);
+            }
         }
-    } catch (err) {
-        displayMessage(messages.error.post + ": " + err.message);
-    }
+    };
+
+    xhttp.send(params.toString()); // ✅ Send data as URL-encoded string
 }
 
 
