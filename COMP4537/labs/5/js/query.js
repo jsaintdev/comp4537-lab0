@@ -3,22 +3,18 @@ const endpoint = "https://lab5-ddivpeg3r-oceaans-projects.vercel.app";
 // Triggers when "Insert" button is pressed
 function defaultPOST() {
     const xhttp = new XMLHttpRequest();
-    const params = new URLSearchParams();
 
-    const data = [
-        { name: "Sara Brown", date: "1901-01-01" },
-        { name: "John Smith", date: "1941-01-01" },
-        { name: "Jack Ma", date: "1961-01-30" },
-        { name: "Elon Musk", date: "1999-01-01" }
-    ];
-
-    data.forEach(item => {
-        params.append("name", item.name);
-        params.append("date", item.date);
-    });
+    const data = {
+        data: [
+            { name: "Sara Brown", date: "1901-01-01" },
+            { name: "John Smith", date: "1941-01-01" },
+            { name: "Jack Ma", date: "1961-01-30" },
+            { name: "Elon Musk", date: "1999-01-01" }
+        ]
+    };
 
     xhttp.open("POST", `${endpoint}/posts`, true);
-    xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json");
 
     xhttp.onreadystatechange = function () {
         if (this.readyState === 4) {
@@ -31,8 +27,9 @@ function defaultPOST() {
         }
     };
 
-    xhttp.send(params.toString());
+    xhttp.send(JSON.stringify(data));
 }
+
 
 // Verifies if the input from the text box is a valid POST or GET request
 async function processQuery() {
