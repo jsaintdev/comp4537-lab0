@@ -8,24 +8,22 @@
 
 <body>
     <main>
-        <table>
-            <tr>
-                <td>
-                    <!-- Inserts the default rows via POST -->
-                    <div>
-                        <button id="defaultPOSTButton"></button>
-                    </div>
-                    <!-- Insert via custom query -->
-                    <div>
-                        <input type="text" id="customquery">
-                        <button id="submitButton"></button>
-                    </div>
-                </td>
-                <td>
-                    <!-- Display response from the server -->
-                </td>
-            </tr>
-        </table>
+        <div id="submissions">
+            <!-- Inserts the default rows via POST -->
+            <div>
+                <img src="img/default.png" alt="default query values">
+                <button id="defaultPOSTButton"></button>
+            </div>
+            <!-- Insert via custom query -->
+            <div>
+                <input type="text" id="customquery">
+                <button id="submitButton"></button>
+            </div>
+            <p id="userMessage"></p>
+        </div>
+        <div id="responses">
+            <!-- Display response from the server -->
+        </div>
 
     </main>
     <script src="lang/messages/en.js"></script>

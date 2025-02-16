@@ -25,7 +25,7 @@ class DefaultPOSTButton extends Button {
 class SubmitButton extends Button {
     constructor() {
         super(messages.index.submit, 'submitButton', () => {
-            // To Do: submit button function
+            processQuery();
         });
     }
 }
