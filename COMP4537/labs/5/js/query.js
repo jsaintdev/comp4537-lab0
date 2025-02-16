@@ -91,7 +91,13 @@ async function customGET(sqlQuery) {
 
         const result = await response.json();
         if (response.ok) {
-            displayMessage(messages.response.get + ": " + JSON.stringify(result));
+            if (Array.isArray(result) && result.length > 0) {
+                // Format results for display with line breaks
+                const formattedResults = result.map(row => `${row.id}: ${row.name}, ${row.date}`).join("<br>");
+                displayMessage(messages.response.get + ":<br>" + formattedResults);
+            } else {
+                displayMessage(messages.response.get + ": No results found.");
+            }
         } else {
             displayMessage(messages.error.get + ": " + result.error);
         }
@@ -103,5 +109,5 @@ async function customGET(sqlQuery) {
 // Helper function to update the display message
 function displayMessage(newMessage) {
     const message = document.getElementById("userMessage");
-    message.textContent = newMessage;
+    message.innerHTML = newMessage;
 }
