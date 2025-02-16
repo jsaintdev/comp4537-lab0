@@ -15,6 +15,7 @@ async function defaultPOST() {
 
     xhttp.open("POST", `${endpoint}/posts`, true);
     xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.setRequestHeader("Accept", "application/json");
     xhttp.send(JSON.stringify(data));
 
     xhttp.onreadystatechange = function () {
