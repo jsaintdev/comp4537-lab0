@@ -1,7 +1,7 @@
 const endpoint = "https://lab5-ddivpeg3r-oceaans-projects.vercel.app";
 
 // Triggers when "Insert" button is pressed
-function defaultPOST() {
+async function defaultPOST() {
     const xhttp = new XMLHttpRequest();
 
     const data = {
@@ -61,7 +61,7 @@ async function processQuery() {
 }
 
 // Sends a valid POST request to /query for user-submitted INSERT queries
-function customPOST(data) {
+async function customPOST(data) {
     const xhttp = new XMLHttpRequest();
     const params = new URLSearchParams();
 
@@ -86,7 +86,7 @@ function customPOST(data) {
         }
     };
 
-    xhttp.send(params.toString()); // ✅ Send data as URL-encoded string
+    xhttp.send(params.toString());
 }
 
 
