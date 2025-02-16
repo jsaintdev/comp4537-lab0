@@ -1,45 +1,37 @@
 const endpoint = "https://lab5-ddivpeg3r-oceaans-projects.vercel.app";
 
 // Triggers when "Insert" button is pressed
-async function defaultPOST() {
-    try {
-        const response = await fetch(endpoint + "/posts", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                data: [{
-                        name: "Sara Brown",
-                        date: "1901-01-01"
-                    },
-                    {
-                        name: "John Smith",
-                        date: "1941-01-01"
-                    },
-                    {
-                        name: "Jack Ma",
-                        date: "1961-01-30"
-                    },
-                    {
-                        name: "Elon Musk",
-                        date: "1999-01-01"
-                    }
-                ]
-            })
-        });
+function defaultPOST() {
+    const xhttp = new XMLHttpRequest();
+    const params = new URLSearchParams();
 
-        const result = await response.json();
-        if (response.ok) {
-            displayMessage(messages.response.post);
-        } else {
-            displayMessage(messages.error.post + ": " + result.error);
+    const data = [
+        { name: "Sara Brown", date: "1901-01-01" },
+        { name: "John Smith", date: "1941-01-01" },
+        { name: "Jack Ma", date: "1961-01-30" },
+        { name: "Elon Musk", date: "1999-01-01" }
+    ];
+
+    data.forEach(item => {
+        params.append("name", item.name);
+        params.append("date", item.date);
+    });
+
+    xhttp.open("POST", `${endpoint}/posts`, true);
+    xhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    xhttp.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                displayMessage(messages.response.post);
+            } else {
+                const error = JSON.parse(this.responseText).error;
+                displayMessage(messages.error.post + ": " + error);
+            }
         }
+    };
 
-    } catch (err) {
-
-        displayMessage(messages.error.post);
-    }
+    xhttp.send(params.toString());
 }
 
 // Verifies if the input from the text box is a valid POST or GET request
