@@ -85,32 +85,10 @@ async function customPOST(sqlQuery) {
 // Sends a valid GET request to /query for user-submitted SELECT queries
 async function customGET(sqlQuery) {
     try {
-        if (sqlQuery.toUpperCase() === "SELECT * FROM POSTS") {
-            await fetchAllPosts();
-            return;
-        }
-
         const response = await fetch(`${endpoint}/query?sql=${encodeURIComponent(sqlQuery)}`, {
             method: "GET"
         });
 
-        const result = await response.json();
-        if (response.ok) {
-            displayMessage(messages.response.get + ": " + JSON.stringify(result));
-        } else {
-            displayMessage(messages.error.get + ": " + result.error);
-        }
-    } catch (err) {
-        displayMessage(messages.error.get + ": " + err.message);
-    }
-}
-
-// Retrieves all posts from /posts
-async function fetchAllPosts() {
-    try {
-        const response = await fetch(endpoint + "/posts", {
-            method: "GET"
-        });
         const result = await response.json();
         if (response.ok) {
             displayMessage(messages.response.get + ": " + JSON.stringify(result));
