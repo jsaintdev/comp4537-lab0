@@ -15,19 +15,27 @@ function defaultPOST() {
 
     xhttp.open("POST", `${endpoint}/posts`, true);
     xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(JSON.stringify(data));
 
     xhttp.onreadystatechange = function () {
         if (this.readyState === 4) {
             if (this.status === 200) {
                 displayMessage(messages.response.post);
             } else {
-                const error = JSON.parse(this.responseText).error;
-                displayMessage(messages.error.post + ": " + error);
+                try {
+                    // Ensure response is not empty before parsing
+                    const responseText = this.responseText.trim(); // Remove accidental whitespace
+                    if (responseText) {
+                        const error = JSON.parse(responseText).error;
+                        displayMessage(messages.error.post + error);
+                    }
+                } catch (e) {
+                    displayMessage(messages.error.post);
+                    console.error("Error parsing response:", this.responseText); // Log unexpected response
+                }
             }
         }
     };
-
-    xhttp.send(JSON.stringify(data));
 }
 
 
