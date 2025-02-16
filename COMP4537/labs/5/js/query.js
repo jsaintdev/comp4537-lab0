@@ -1,4 +1,4 @@
-const endpoint = "https://justinsaintdev.com";
+const endpoint = "https://lab5-ddivpeg3r-oceaans-projects.vercel.app";
 
 // Triggers when "Insert" button is pressed
 async function defaultPOST() {
