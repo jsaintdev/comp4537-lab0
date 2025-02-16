@@ -1,7 +1,7 @@
 window.messages = {
     index: {
-        defaultMsg: "",
-        textBoxMsg: "",
+        defaultMsg: "Insert Default Values",
+        textBoxMsg: "Enter a SELECT or INSERT request:",
         insert: "Insert",
         submit: "Submit"
     },

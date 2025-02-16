@@ -6,4 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById("defaultPOSTButton").replaceWith(insertButton);
     document.getElementById("submitButton").replaceWith(submitButton);
+    document.getElementById("defaultMsg").textContent = messages.index.defaultMsg;
+    document.getElementById("textBoxMsg").textContent = messages.index.textBoxMsg;
 });
