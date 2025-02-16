@@ -1,4 +1,4 @@
-const messages = {
+window.messages = {
     index: {
         defaultMsg: "",
         textBoxMsg: "",
@@ -19,5 +19,3 @@ const messages = {
     }
 
 };
-
-module.exports = messages;
