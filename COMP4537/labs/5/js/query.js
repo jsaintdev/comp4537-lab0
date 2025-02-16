@@ -24,7 +24,8 @@ function defaultPOST() {
             } else {
                 try {
                     // Ensure response is not empty before parsing
-                    const responseText = this.responseText.trim(); // Remove accidental whitespace
+                    const responseText = this.responseText.trim();
+                    console.log("responseText: " + responseText);
                     if (responseText) {
                         const error = JSON.parse(responseText).error;
                         displayMessage(messages.error.post + error);
