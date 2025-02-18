@@ -1,4 +1,4 @@
-const endpoint = "https://lab5-ddivpeg3r-oceaans-projects.vercel.app";
+const endpoint = "https://comp4537-1-x3ly.onrender.com";
 
 // Triggers when "Insert" button is pressed
 async function defaultPOST() {
